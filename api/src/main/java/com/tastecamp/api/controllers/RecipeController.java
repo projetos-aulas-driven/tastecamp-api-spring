@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,35 +32,46 @@ public class RecipeController {
     }
 
     @GetMapping()
-    public List<RecipeModel> getRecipes() {
-        return recipeRepository.findAll();
+    public ResponseEntity<Object> getRecipes() {
+        return ResponseEntity.status(HttpStatus.OK).body(recipeRepository.findAll());
     }
 
     @GetMapping("/{id}")
-    public Optional<RecipeModel> getRecipeById(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> getRecipeById(@PathVariable("id") Long id) {
         Optional<RecipeModel> recipe = recipeRepository.findById(id);
 
         if (!recipe.isPresent()) {
-            return Optional.empty();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Recipe with this id not found");
         } else {
-            return Optional.of(recipe.get());
+            return ResponseEntity.status(HttpStatus.OK).body(recipe.get());
         }
     }
 
     @PostMapping()
-    public void createRecipe(@RequestBody @Valid RecipeDTO body) {
+    public ResponseEntity<Object> createRecipe(@RequestBody @Valid RecipeDTO body) {
         RecipeModel recipe = new RecipeModel(body);
         recipeRepository.save(recipe);
+        return ResponseEntity.status(HttpStatus.CREATED).body(recipe);
     }
 
     @PutMapping("/{id}")
-    public String updateRecipe(@PathVariable("id") Long id, @RequestBody String body) {
-        return "Edição da receita " + id + body;
+    public ResponseEntity<Object> updateRecipe(@PathVariable("id") Long id, @RequestBody @Valid RecipeDTO body) {
+        Optional<RecipeModel> recipe = recipeRepository.findById(id);
+
+        if (!recipe.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        RecipeModel newRecipe = new RecipeModel(body);
+        newRecipe.setId(id);
+        recipeRepository.save(newRecipe);
+        return ResponseEntity.status(HttpStatus.OK).body(newRecipe);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteRecipe(@PathVariable("id") Long id) {
-        return "Deletando item " + id;
+    public ResponseEntity<Object> deleteRecipe(@PathVariable("id") Long id) {
+        recipeRepository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }
