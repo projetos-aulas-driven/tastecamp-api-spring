@@ -3,8 +3,11 @@ package com.tastecamp.api.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tastecamp.api.dtos.RecipeDTO;
 import com.tastecamp.api.models.RecipeModel;
 import com.tastecamp.api.repositories.RecipeRepository;
+
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,8 +46,9 @@ public class RecipeController {
     }
 
     @PostMapping()
-    public String createRecipe(@RequestBody String body) {
-        return body;
+    public void createRecipe(@RequestBody @Valid RecipeDTO body) {
+        RecipeModel recipe = new RecipeModel(body);
+        recipeRepository.save(recipe);
     }
 
     @PutMapping("/{id}")

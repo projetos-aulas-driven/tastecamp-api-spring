@@ -1,5 +1,7 @@
 package com.tastecamp.api.models;
 
+import com.tastecamp.api.dtos.RecipeDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,4 +31,10 @@ public class RecipeModel {
 
     @Column(nullable = false)
     private String steps;
+
+    public RecipeModel (RecipeDTO dto) {
+        this.title = dto.getTitle();
+        this.ingredients = dto.getIngredients();
+        this.steps = dto.getSteps();
+    }
 }
