@@ -1,6 +1,7 @@
 package com.tastecamp.api.dtos;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -15,4 +16,7 @@ public class RecipeDTO { // Data Transfer Object
 
     @NotBlank
     private String steps;
+
+    @NotNull
+    private Long authorId;
 }

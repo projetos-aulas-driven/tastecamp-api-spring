@@ -7,15 +7,19 @@ import org.springframework.stereotype.Service;
 
 import com.tastecamp.api.dtos.RecipeDTO;
 import com.tastecamp.api.models.RecipeModel;
+import com.tastecamp.api.models.UserModel;
 import com.tastecamp.api.repositories.RecipeRepository;
+import com.tastecamp.api.repositories.UserRepository;
 
 @Service
 public class RecipeService {
 
     final RecipeRepository recipeRepository;
+    final UserRepository userRepository;
 
-    RecipeService(RecipeRepository recipeRepository) {
+    RecipeService(RecipeRepository recipeRepository, UserRepository userRepository) {
         this.recipeRepository = recipeRepository;
+        this.userRepository = userRepository;
     }
 
     public List<RecipeModel> getRecipes() {
@@ -36,8 +40,14 @@ public class RecipeService {
         if (recipeRepository.existsByTitle(body.getTitle())) {
             return Optional.empty();
         }
+
+        Optional<UserModel> user = userRepository.findById(body.getAuthorId());
+
+        if(!user.isPresent()) {
+            return Optional.empty();
+        }
         
-        RecipeModel recipe = new RecipeModel(body);
+        RecipeModel recipe = new RecipeModel(body, user.get());
         recipeRepository.save(recipe);
         return Optional.of(recipe);
     }
