@@ -9,6 +9,7 @@ import com.tastecamp.api.services.RecipeService;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -71,6 +72,12 @@ public class RecipeController {
     public ResponseEntity<Object> deleteRecipe(@PathVariable("id") Long id) {
         recipeService.deleteRecipe(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<Object> getRecipesByCategoryId(@PathVariable("categoryId") Long categoryId) {
+        List<RecipeModel> recipes = recipeService.getRecipesByCategoryId(categoryId);
+        return ResponseEntity.status(HttpStatus.OK).body(recipes);
     }
 
 }

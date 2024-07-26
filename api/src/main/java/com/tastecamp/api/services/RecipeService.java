@@ -74,4 +74,8 @@ public class RecipeService {
     public void deleteRecipe(Long id) {
         recipeRepository.deleteById(id);
     }
+
+    public List<RecipeModel> getRecipesByCategoryId(Long id) {
+        return recipeRepository.findByCategoryId(id);
+    }
 }
