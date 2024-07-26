@@ -5,7 +5,8 @@ import org.springframework.stereotype.Repository;
 
 import com.tastecamp.api.models.RecipeModel;
 
+
 @Repository
 public interface RecipeRepository extends JpaRepository<RecipeModel, Long> {
-    
+    boolean existsByTitle(String title);
 }
