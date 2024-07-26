@@ -1,5 +1,8 @@
 package com.tastecamp.api.models;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tastecamp.api.dtos.RecipeDTO;
 
 import jakarta.persistence.Column;
@@ -8,6 +11,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -38,10 +43,21 @@ public class RecipeModel {
     @JoinColumn(name = "authorId")
     private UserModel author;
 
-    public RecipeModel (RecipeDTO dto, UserModel author) {
+    @ManyToMany
+    @JoinTable(name = "recipe-category", joinColumns = @JoinColumn(name = "recipeId"), inverseJoinColumns = @JoinColumn(name = "categoryId"))
+    private List<CategoryModel> categories;
+
+    public RecipeModel(RecipeDTO dto) {
+        this.title = dto.getTitle();
+        this.ingredients = dto.getIngredients();
+        this.steps = dto.getSteps();
+    }
+
+    public RecipeModel(RecipeDTO dto, UserModel author, List<CategoryModel> categories) {
         this.title = dto.getTitle();
         this.ingredients = dto.getIngredients();
         this.steps = dto.getSteps();
         this.author = author;
+        this.categories = categories;
     }
 }

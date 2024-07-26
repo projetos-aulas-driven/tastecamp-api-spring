@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.tastecamp.api.dtos.RecipeDTO;
+import com.tastecamp.api.models.CategoryModel;
 import com.tastecamp.api.models.RecipeModel;
 import com.tastecamp.api.models.UserModel;
+import com.tastecamp.api.repositories.CategoryRepository;
 import com.tastecamp.api.repositories.RecipeRepository;
 import com.tastecamp.api.repositories.UserRepository;
 
@@ -16,10 +18,12 @@ public class RecipeService {
 
     final RecipeRepository recipeRepository;
     final UserRepository userRepository;
+    final CategoryRepository categoryRepository;
 
-    RecipeService(RecipeRepository recipeRepository, UserRepository userRepository) {
+    RecipeService(RecipeRepository recipeRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public List<RecipeModel> getRecipes() {
@@ -46,8 +50,10 @@ public class RecipeService {
         if(!user.isPresent()) {
             return Optional.empty();
         }
+
+        List<CategoryModel> categories = categoryRepository.findAllById(body.getCategoryIds());
         
-        RecipeModel recipe = new RecipeModel(body, user.get());
+        RecipeModel recipe = new RecipeModel(body, user.get(), categories);
         recipeRepository.save(recipe);
         return Optional.of(recipe);
     }
