@@ -50,11 +50,6 @@ public class RecipeController {
     @PostMapping()
     public ResponseEntity<RecipeModel> createRecipe(@RequestBody @Valid RecipeDTO body) {
         RecipeModel recipe = recipeService.createRecipe(body);
-
-        // if (!recipe.isPresent()) {
-        //     return ResponseEntity.status(HttpStatus.CONFLICT).body("A recipe with this title already exists");
-        // }
-
         return ResponseEntity.status(HttpStatus.CREATED).body(recipe);
     }
 
