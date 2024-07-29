@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.tastecamp.api.dtos.RecipeDTO;
+import com.tastecamp.api.exceptions.RecipeTitleConflictException;
+import com.tastecamp.api.exceptions.UserNotFoundException;
 import com.tastecamp.api.models.CategoryModel;
 import com.tastecamp.api.models.RecipeModel;
 import com.tastecamp.api.models.UserModel;
@@ -40,22 +42,19 @@ public class RecipeService {
         }
     }
 
-    public Optional<RecipeModel> createRecipe(RecipeDTO body) {
+    public RecipeModel createRecipe(RecipeDTO body) {
         if (recipeRepository.existsByTitle(body.getTitle())) {
-            return Optional.empty();
+            throw new RecipeTitleConflictException("A recipe with this title already exists");
         }
 
-        Optional<UserModel> user = userRepository.findById(body.getAuthorId());
-
-        if(!user.isPresent()) {
-            return Optional.empty();
-        }
+        UserModel user = userRepository
+            .findById(body.getAuthorId())
+            .orElseThrow(() -> new UserNotFoundException("Could not find user with this id"));
 
         List<CategoryModel> categories = categoryRepository.findAllById(body.getCategoryIds());
         
-        RecipeModel recipe = new RecipeModel(body, user.get(), categories);
-        recipeRepository.save(recipe);
-        return Optional.of(recipe);
+        RecipeModel recipe = new RecipeModel(body, user, categories);
+        return recipeRepository.save(recipe);
     }
 
     public Optional<RecipeModel> updateRecipe(Long id, RecipeDTO body) {
